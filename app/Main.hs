@@ -6,3 +6,7 @@ import Brillo
 
 main :: IO ()
 main = putStrLn "Hello, Haskell!"
+
+{-
+Scott was here
+-}
