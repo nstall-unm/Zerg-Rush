@@ -1,11 +1,18 @@
 module Main where
 
 import Brillo
-import System.Random (randomRIO)
-import Brillo.Data.ViewPort (ViewPort)
+import Brillo.Data.ViewPort
+
+import Types
+import Frontend
+import Backend
+import Events
+import System.Random
+
+import Randomness
 
 window :: Display
-window = InWindow "Window" (1024, 768) (10, 10)
+window = InWindow "Window" (ws, ws) (10, 10)
 
 bg :: Color
 bg = white
@@ -13,33 +20,19 @@ bg = white
 fps :: Int
 fps = 60
 
-data State = State Float deriving (Eq, Show)
-
-initState :: State
-initState = State 400
-
-
--- Random Y spawnpoint (on left edge)
--- initState :: IO State
--- initState = do
---     y <- 
-
-draw :: State -> Picture
-draw (State x) = Pictures
-    [ Color black (rectangleSolid 100 150)        -- tower at (0, 0)
-    , Translate x 0 (Color red (circleSolid 20))  -- Circle moves toward 0
-    ]
-
--- Moves the circle
-update :: ViewPort -> Float -> State -> State
-update _ _ (State x)
-    | x > 0     = State (x - 1)
-    | otherwise = State x
+initState :: RandomGen g => g -> State
+initState g = 
+    let (zergs, _) = genStartingPositions g
+    in MkState [] zergs
 
 main :: IO ()
-main =
-    simulate window bg fps
-        initState
+main = do
+    g <- initStdGen -- Random seed
+    -- let g = mkStdGen 10 -- Constant seed
+    -- let (zergs, g') = genStartingPositions g
+    -- print (head zergs)
+    play window bg fps
+        (initState g)
         draw
+        handleEvent
         update
-        

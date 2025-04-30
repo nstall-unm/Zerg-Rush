@@ -1,0 +1,32 @@
+module Randomness where
+
+import System.Random
+
+import Types
+
+-- so it turns out random in haskell sucks and haskell sort of depends on "any given function will always give the same output when given the same input" and thats
+-- not how random works so this basically takes a seed g and gives back g' to be used next time
+
+-- try not to touch this file unless you really need to
+
+genZerg :: RandomGen g => g -> (Zerg, g)
+genZerg g = 
+    let hws = fromIntegral ws / 2
+        (side, g') = uniformR (1 :: Int, 4 :: Int) g
+        (xy, g'')  = uniformR (-hws, hws) g'
+        (speed, g''') = uniformR (1 :: Float, 5 :: Float) g''
+        p = if odd side then (xy, hws) else (hws, xy)
+    in (MkZerg zergStartingHealth speed p, g''')
+
+genStartingPositions :: RandomGen g => g -> ([Zerg], g)
+genStartingPositions g =
+    let (zerg, g') = genZerg g
+        (zergs, g'') = genStartingPositions g'
+    in (zerg : zergs, g'')
+
+spawnZerg :: State -> State
+spawnZerg s =
+    let newZerg = head (spawnableZergs s)
+    in s { activeZergs = newZerg : activeZergs s,
+           spawnableZergs = tail (spawnableZergs s)
+         }
