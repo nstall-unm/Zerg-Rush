@@ -2,6 +2,7 @@ module Main where
 
 import Brillo
 import System.Random (randomRIO)
+import Brillo.Data.ViewPort (ViewPort)
 
 window :: Display
 window = InWindow "Window" (1024, 768) (10, 10)
@@ -10,12 +11,13 @@ bg :: Color
 bg = white
 
 fps :: Int
-fps = 1
+fps = 60
 
-data State = State deriving (Eq, Show)
+data State = State Float deriving (Eq, Show)
 
 initState :: State
-initState = State
+initState = State 400
+
 
 -- Random Y spawnpoint (on left edge)
 -- initState :: IO State
@@ -23,14 +25,21 @@ initState = State
 --     y <- 
 
 draw :: State -> Picture
---draw _ = Color green (rectangleSolid 300 250)
-draw _ = Pictures   
-        [ Translate 0 0 $ Color green (rectangleSolid 300 250)
-        , translate (-512) 0 $ Color blue (circleSolid 20)]
+draw (State x) = Pictures
+    [ Color black (rectangleSolid 100 150)        -- tower at (0, 0)
+    , Translate x 0 (Color red (circleSolid 20))  -- Circle moves toward 0
+    ]
+
+-- Moves the circle
+update :: ViewPort -> Float -> State -> State
+update _ _ (State x)
+    | x > 0     = State (x - 1)
+    | otherwise = State x
 
 main :: IO ()
 main =
     simulate window bg fps
         initState
         draw
-        (\_ _ s -> s)
+        update
+        
