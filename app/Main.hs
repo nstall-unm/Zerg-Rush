@@ -14,9 +14,12 @@ data State = State deriving (Eq, Show)
 initState :: State
 initState = State
 
+draw :: State -> Picture
+draw _ = Color black (rectangleSolid 100 150)
+
 main :: IO ()
-main = 
-    simulate window bg fps 
-        initState 
-        (\_ -> blank)
+main =
+    simulate window bg fps
+        initState
+        draw
         (\_ _ s -> s)
