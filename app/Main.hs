@@ -14,12 +14,6 @@ import Randomness
 window :: Display
 window = InWindow "Window" (ws, ws) (10, 10)
 
-bg :: Color
-bg = white
-
-fps :: Int
-fps = 60
-
 initState :: RandomGen g => g -> State
 initState g = 
     let (zergs, _) = genStartingPositions g
