@@ -20,11 +20,14 @@ data State =
         timeSinceLastSpawn :: Float  -- in seconds
     } deriving (Eq, Show)
 
-ws :: Int -- windowSize
+-- Window Size
+ws :: Int
 ws = 1024
 
+-- Background Color
 bg :: Color
 bg = white
 
+-- Frames per second, tied to game speed as well
 fps :: Int
 fps = 60
