@@ -4,14 +4,14 @@ import Brillo
 import Brillo.Data.Picture
 
 import Types
+import Randomness
 
 -- draw :: State -> Picture
 -- draw s = Blank
 
 draw :: State -> Picture
 draw s = Pictures
-     [ Color black (rectangleSolid 100 150) 
-     , (Color red (circleSolid 20))]
+     [ Color black (rectangleSolid 100 150) ]
 
 -- draw :: State -> Picture
 -- draw _ = Color black (rectangleSolid 100 150)
@@ -19,8 +19,6 @@ draw s = Pictures
 --      [ Color black (rectangleSolid 100 150)        -- tower at (0, 0)
 --      , Translate x 0 (Color red (circleSolid 20))  -- Circle moves toward 0
 --      ]
-
---
 
 -- [ Color black (rectangleSolid 100 150)        -- tower at (0, 0)
 --     , Translate x 0 (Color red (circleSolid 20))  -- Circle moves toward 0
