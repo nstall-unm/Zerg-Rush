@@ -15,7 +15,12 @@ genZerg g =
         (side, g') = uniformR (1 :: Int, 4 :: Int) g
         (xy, g'')  = uniformR (-hws, hws) g'
         (speed, g''') = uniformR (1 :: Float, 5 :: Float) g''
-        p = if odd side then (xy, hws) else (hws, xy)
+        --p = if odd side then (xy, hws) else (hws, xy)
+        p = case side of -- old one only spawned on 2 edges now I have a case statement to spawn on all 4
+            1 -> (xy, hws)    -- top
+            2 -> (xy, -hws)   -- bottom
+            3 -> (-hws, xy)   -- left
+            _ -> (hws, xy)    -- right (covers 4)
     in (MkZerg zergStartingHealth speed p, g''')
 
 genStartingPositions :: RandomGen g => g -> ([Zerg], g)
