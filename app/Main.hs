@@ -23,7 +23,7 @@ fps = 60
 initState :: RandomGen g => g -> State
 initState g = 
     let (zergs, _) = genStartingPositions g
-    in MkState [] zergs
+    in MkState [] zergs 0
 
 main :: IO ()
 main = do

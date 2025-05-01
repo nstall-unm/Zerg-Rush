@@ -15,7 +15,8 @@ zergStartingHealth = 3
 data State =
     MkState {
         activeZergs :: [Zerg],
-        spawnableZergs :: [Zerg]
+        spawnableZergs :: [Zerg],
+        timeSinceLastSpawn :: Float  -- in seconds
     } deriving (Eq, Show)
 
 ws :: Int -- windowSize
