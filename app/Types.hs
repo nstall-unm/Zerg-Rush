@@ -1,6 +1,7 @@
 module Types where
 
 import Brillo.Data.Point
+import Brillo.Data.Color
 
 data Zerg = 
     MkZerg {
@@ -21,3 +22,9 @@ data State =
 
 ws :: Int -- windowSize
 ws = 1024
+
+bg :: Color
+bg = white
+
+fps :: Int
+fps = 60
