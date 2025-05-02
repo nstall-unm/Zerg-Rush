@@ -18,10 +18,20 @@ draw s = Pictures $
     Color black (rectangleSolid 100 150) : map drawZerg (activeZergs s)
 
 drawZerg :: Zerg -> Picture
+drawZerg (MkZerg hp _ (x, y)) =
+  Pictures [Translate x y (Color (healthColor hp) (circleSolid 10))]
+  where
+    healthColor h = case h of
+      3 -> green
+      2 -> yellow
+      _ -> red
+      
+{-
+drawZerg :: Zerg -> Picture
 drawZerg (MkZerg _ _ (x, y)) =
     Translate x y $
         Color red (circleSolid 10)
-
+-}
 -- draw :: State -> Picture
 -- draw _ = Color black (rectangleSolid 100 150)
 -- draw (State x) = Pictures
