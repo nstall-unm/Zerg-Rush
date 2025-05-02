@@ -13,9 +13,25 @@ import Randomness
 -- draw s = Pictures
 --      [ Color black (rectangleSolid 100 150) ]
 
+
 draw :: State -> Picture
 draw s = Pictures $
-    Color black (rectangleSolid 100 150) : map drawZerg (activeZergs s)
+    Color black (rectangleSolid 100 150) : map drawZerg (activeZergs s) -- Add a tuple to call drawTower
+
+-- Frontend.hs
+drawTower :: Tower -> Picture
+drawTower (MkTower (x, y) health (w, h)) = Pictures [
+    Translate x y $ Color (towerColor health) (rectangleSolid w h),
+    Translate (x - 40) (y + h/2 + 30) $  -- Higher Y-position
+      Scale 0.3 0.3 $  -- Larger text
+      Color white $  -- Contrast color
+      text ("HP: " ++ show health)
+  ]
+  where
+    towerColor hp
+        | hp > 7 = black
+        | hp > 3 = dark red
+        | otherwise = red
 
 drawZerg :: Zerg -> Picture
 drawZerg (MkZerg hp _ (x, y)) =
@@ -25,7 +41,7 @@ drawZerg (MkZerg hp _ (x, y)) =
       3 -> green
       2 -> yellow
       _ -> red
-      
+
 {-
 drawZerg :: Zerg -> Picture
 drawZerg (MkZerg _ _ (x, y)) =

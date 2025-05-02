@@ -17,7 +17,7 @@ window = InWindow "Window" (ws, ws) (10, 10)
 initState :: RandomGen g => g -> State
 initState g = 
     let (zergs, _) = genStartingPositions g
-    in MkState [] zergs 0
+    in MkState [] zergs 0 startingTower
 
 main :: IO ()
 main = do

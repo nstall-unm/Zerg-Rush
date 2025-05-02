@@ -13,12 +13,25 @@ data Zerg =
 zergStartingHealth :: Int
 zergStartingHealth = 3
 
+data Tower = MkTower {
+    towerPos :: Point,
+    towerHealth :: Int,
+    towerSize :: (Float, Float) -- widith and height
+} deriving (Eq, Show)
+
+startingTower :: Tower
+startingTower = MkTower (0, 0) 10 (100.0, 150.0) -- 10 hp tower in the middle
+
 data State =
     MkState {
         activeZergs :: [Zerg],
         spawnableZergs :: [Zerg],
-        timeSinceLastSpawn :: Float  -- in seconds
+        timeSinceLastSpawn :: Float,  -- in seconds
+        gameTower :: Tower -- Tower being in state
     } deriving (Eq, Show)
+
+dark' :: Color -> Color
+dark' c = dim (dim c)  -- Makes color darker
 
 -- Window Size
 ws :: Int

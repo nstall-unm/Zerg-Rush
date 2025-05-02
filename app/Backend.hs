@@ -17,8 +17,9 @@ spawnInterval = 2.0
 --             timeSinceLastSpawn = 0 }
 --     | otherwise = s { timeSinceLastSpawn = time + dt }
 
+{-
 update :: Float -> State -> State
-update dt s@(MkState active spawnables time)
+update dt s@(MkState active spawnables time tower)
     | time + dt >= spawnInterval =
         let newState = spawnZerg s
         in newState {
@@ -29,6 +30,47 @@ update dt s@(MkState active spawnables time)
         timeSinceLastSpawn = time + dt,
         activeZergs = moveZergs dt active
     }
+-}
+update :: Float -> State -> State
+update dt s@(MkState active spawnables time tower) =
+    -- Move zergs first
+    let movedZergs = moveZergs dt active
+        -- Check collisions with updated positions
+        (remainingZergs, towerDamage) = checkTowerCollision movedZergs tower
+        updatedTower = applyTowerDamage tower towerDamage
+        -- Update time and tower FIRST
+        baseUpdatedState = s {
+            timeSinceLastSpawn = time + dt,
+            activeZergs = remainingZergs,
+            gameTower = updatedTower
+        }
+    in if time + dt >= spawnInterval
+        then case spawnableZergs baseUpdatedState of  -- Use UPDATED state
+            (z:zs) -> baseUpdatedState {
+                activeZergs = z : remainingZergs,  -- Add new zerg
+                spawnableZergs = zs,
+                timeSinceLastSpawn = 0
+            }
+            [] -> baseUpdatedState
+        else baseUpdatedState
+-- Check collisions between zergs and tower
+checkTowerCollision :: [Zerg] -> Tower -> ([Zerg], Int)
+checkTowerCollision zergs (MkTower (tx, ty) _ (tw, th)) =
+    foldr (\z (zs, dmg) -> 
+        if zergCollidesWithTower z (tw, th)
+        then (zs, dmg + 1)  -- Count damage, remove zerg
+        else (z:zs, dmg)
+    ) ([], 0) zergs
+
+zergCollidesWithTower :: Zerg -> (Float, Float) -> Bool
+zergCollidesWithTower (MkZerg _ _ (zx, zy)) (tw, th) =
+    let halfW = tw/2
+        halfH = th/2
+    in abs zx <= halfW && abs zy <= halfH
+
+applyTowerDamage :: Tower -> Int -> Tower
+applyTowerDamage (MkTower pos health size) damage =
+    MkTower pos (max 0 (health - damage)) size
 
 moveZergs :: Float -> [Zerg] -> [Zerg]
 moveZergs dt = map (moveZerg dt)
