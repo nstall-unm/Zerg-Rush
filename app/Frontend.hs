@@ -16,7 +16,7 @@ import Randomness
 
 draw :: State -> Picture
 draw s = Pictures $
-    Color black (rectangleSolid 100 150) : map drawZerg (activeZergs s) -- Add a tuple to call drawTower
+    Color black (rectangleSolid 100 150) : map drawZerg (activeZergs s) -- Add a tuple to call drawTower 
 
 -- Frontend.hs
 drawTower :: Tower -> Picture
