@@ -30,6 +30,9 @@ data State =
         gameTower :: Tower -- Tower being in state
     } deriving (Eq, Show)
 
+kills :: Int
+kills = 0
+
 dark' :: Color -> Color
 dark' c = dim (dim c)  -- Makes color darker
 

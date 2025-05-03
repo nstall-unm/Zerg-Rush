@@ -16,7 +16,7 @@ import Randomness
 
 draw :: State -> Picture
 draw s = Pictures $
-    Color black (rectangleSolid 100 150) : map drawZerg (activeZergs s) -- Add a tuple to call drawTower 
+    [Color black (rectangleSolid 100 150), drawHUD] ++ map drawZerg (activeZergs s) -- Add a tuple to call drawTower 
 
 -- Frontend.hs
 drawTower :: Tower -> Picture
@@ -41,6 +41,13 @@ drawZerg (MkZerg hp _ (x, y)) =
       3 -> green
       2 -> yellow
       _ -> red
+
+drawHUD :: Picture
+drawHUD =
+  Translate (-400) 500 $
+  Scale 0.1 0.1 $
+  Color black $
+  Text ("Kills: " ++ show kills)
 
 {-
 drawZerg :: Zerg -> Picture
