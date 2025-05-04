@@ -69,6 +69,7 @@ executable zergRush
     -- Other library packages from which modules are imported.
     build-depends:    base ^>=4.17.2.1,
                       brillo,
+                      JuicyPixels,
                       random
 
     -- Directories containing source files.

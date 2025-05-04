@@ -2,6 +2,7 @@ module Frontend where
 
 import Brillo
 import Brillo.Data.Picture
+import Codec.Picture 
 
 import Types
 import Randomness
@@ -17,6 +18,13 @@ import Randomness
 draw :: State -> Picture
 draw s = Pictures $
     [Color black (rectangleSolid 100 150), drawHUD] ++ map drawZerg (activeZergs s) -- Add a tuple to call drawTower 
+
+loadAsset :: FilePath -> IO (Either String (Image PixelRGBA8))
+loadAsset path = do
+  result <- readImage path
+  return $ case result of
+    Left err -> Left err
+    Right dyn -> Right $ convertRGBA8 dyn
 
 -- Frontend.hs
 drawTower :: Tower -> Picture

@@ -33,7 +33,7 @@ handleEvent (EventKey (MouseButton LeftButton) Down _ clickPos) s =
     in s { activeZergs = survivors }
 handleEvent e s = s
 
-killCount :: Zerg -> Int
-killCount z = if not (isAlive z) then kills + 1 else kills
+-- killCount :: Zerg -> Int
+-- killCount z = if not (isAlive z) then kills + 1 else kills
 
 -- this should handle what happens when the mouse is clicked
