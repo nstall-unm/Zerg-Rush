@@ -2,9 +2,6 @@ module Types where
 
 import Brillo.Data.Point
 import Brillo.Data.Color
-import Codec.Picture 
-import Brillo (Picture)
- 
 
 data Zerg = 
     MkZerg {

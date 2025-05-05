@@ -1,8 +1,6 @@
 module Frontend where
 
 import Brillo
-import Brillo.Data.Picture
-import Codec.Picture 
 
 import Types
 import Randomness
