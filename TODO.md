@@ -1,5 +1,6 @@
 # TODO List
 
+
 ## Things to add
 Zerg id system
 
@@ -13,8 +14,11 @@ Add multiple options for multiple lists to spawn for towers
 
 Use Brillo bitmap to load custom images
 
+
 ## Bugs to Fix
 Stop kill count from incrementing when Zergs hit the tower. 
 
+
 ## Things to Remove or Clean Up
 Anything to do with Juicy Pixels, we will not be using that
+This TODO list

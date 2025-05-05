@@ -35,8 +35,4 @@ handleEvent (EventKey (MouseButton LeftButton) Down _ clickPos) s =
         kills = kills s + clickKills  -- Add click kills to total
     }
 handleEvent e s = s
-
--- killCount :: Zerg -> Int
--- killCount z = if not (isAlive z) then kills + 1 else kills
-
 -- this should handle what happens when the mouse is clicked

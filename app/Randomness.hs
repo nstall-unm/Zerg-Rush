@@ -30,25 +30,6 @@ genStartingPositions g =
         (zergs, g'') = genStartingPositions g'
     in (zerg : zergs, g'')
 
-{-
-spawnZerg :: State -> State
-spawnZerg s =
-    let newZerg = head (spawnableZergs s)
-    in s { activeZergs = newZerg : activeZergs s,
-           spawnableZergs = tail (spawnableZergs s)
-         }
--}
-
-{-
-spawnZerg :: State -> State
-spawnZerg s = case spawnableZergs s of
-    (z:zs) -> s { 
-        activeZergs = z : activeZergs s,  
-        spawnableZergs = zs
-    }
-    [] -> s   
-    -}
-
 spawnZerg :: State -> State
 spawnZerg s = case spawnableZergs s of
     (z:zs) -> s { 

@@ -22,13 +22,6 @@ data Tower = MkTower {
     towerSize :: (Float, Float) -- widith and height
 } deriving (Eq, Show)
 
--- loadAsset :: FilePath -> IO (Either String (Image PixelRGBA8))
--- loadAsset path = do
---   result <- readImage path
---   return $ case result of
---     Left err -> Left err
---     Right dyn -> Right $ convertRGBA8 dyn
-
 data State =
     MkState {
         activeZergs :: [Zerg],

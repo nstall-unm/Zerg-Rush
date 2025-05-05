@@ -13,30 +13,19 @@ import Randomness
 window :: Display
 window = InWindow "Window" (ws, ws) (10, 10)
 
-{-
-initState g = 
-    let (zergs, _) = genStartingPositions g
-    in MkState [] zergs 0 towersList 0 
--}
-
 initState :: RandomGen g => g -> State
 initState g =
     let (zergs, _) = genStartingPositions g
     in MkState
-        { activeZergs = []
-        , spawnableZergs = zergs
-        , timeSinceLastSpawn = 0
-        , activeTowers = towersList
-        , kills = 0
-        , isGameOver = False
+        { activeZergs = [],
+         spawnableZergs = zergs,
+         timeSinceLastSpawn = 0,
+         activeTowers = towersList,
+         kills = 0,
+        isGameOver = False
         }
 
 main :: IO ()
-{-
-main = do
-    g <- initStdGen
-    play window bg fps (initState g) draw handleEvent update
--}
 main = do
     let g = mkStdGen 42  -- Constant seed for reproducibility
     play window bg fps (initState g) draw handleEvent update
