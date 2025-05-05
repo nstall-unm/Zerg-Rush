@@ -18,6 +18,7 @@ initState g =
     in MkState
         { activeZergs = [],
          spawnableZergs = zergs,
+         --zergID = 0,
          timeSinceLastSpawn = 0,
          activeTowers = towersList,
          kills = 0,
