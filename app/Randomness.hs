@@ -9,6 +9,7 @@ import Types
 
 -- try not to touch this file unless you really need to
 
+-- TODO: add zerg ID system
 genZerg :: RandomGen g => g -> (Zerg, g)
 genZerg g = 
     let hws = fromIntegral ws / 2

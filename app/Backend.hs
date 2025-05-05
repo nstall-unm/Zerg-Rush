@@ -126,6 +126,8 @@ applyTowerDamage :: Tower -> Int -> Tower
 applyTowerDamage (MkTower pos health size) damage =
     MkTower pos (max 0 (health - damage)) size
 
+
+-- TODO: add more movement functions
 moveZergs :: Float -> [Zerg] -> [Zerg]
 moveZergs dt = map (moveZerg dt)
 

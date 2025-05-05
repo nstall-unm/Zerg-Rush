@@ -25,13 +25,6 @@ draw s = Pictures $
     map drawZerg (activeZergs s) ++  -- Draw zergs first
     [ drawHUD s ]                    -- Draw HUD on top
 
-loadAsset :: FilePath -> IO (Either String (Image PixelRGBA8))
-loadAsset path = do
-  result <- readImage path
-  return $ case result of
-    Left err -> Left err
-    Right dyn -> Right $ convertRGBA8 dyn
-
 drawTower :: Tower -> Picture
 drawTower (MkTower (x, y) health (w, h)) = Pictures [
     Translate x y (Color (towerColor health) (rectangleSolid w h)),
