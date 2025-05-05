@@ -22,7 +22,7 @@ genZerg g =
             2 -> (xy, -hws)   -- bottom
             3 -> (-hws, xy)   -- left
             _ -> (hws, xy)    -- right (covers 4)
-    in (MkZerg  (zergID g''' = zergID g''' + 1) zergStartingHealth speed p, g''')
+    in (MkZerg zergStartingHealth speed p, g''')
 
 genStartingPositions :: RandomGen g => g -> ([Zerg], g)
 genStartingPositions g =
