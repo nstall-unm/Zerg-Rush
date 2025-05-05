@@ -19,19 +19,28 @@ data Tower = MkTower {
     towerSize :: (Float, Float) -- widith and height
 } deriving (Eq, Show)
 
-startingTower :: Tower
-startingTower = MkTower (0, 0) 10 (100.0, 150.0) -- 10 hp tower in the middle
+
 
 data State =
     MkState {
         activeZergs :: [Zerg],
         spawnableZergs :: [Zerg],
         timeSinceLastSpawn :: Float,  -- in seconds
-        gameTower :: Tower -- Tower being in state
+        activeTowers :: [Tower], -- Tower being in state
+        kills :: Int,
+        isGameOver :: Bool
     } deriving (Eq, Show)
 
-kills :: Int
-kills = 0
+
+startingTower :: Tower
+startingTower = MkTower (60, 0) 10 (100.0, 150.0) -- 10 hp tower in the middle
+
+startingTower2 :: Tower
+startingTower2 = MkTower (-60, 0) 10 (100.0, 150.0)
+
+towersList :: [Tower]
+towersList = [startingTower, startingTower2]
+
 
 dark' :: Color -> Color
 dark' c = dim (dim c)  -- Makes color darker

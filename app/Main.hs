@@ -3,7 +3,7 @@ module Main where
 import Brillo
 import Brillo.Data.ViewPort
 
-import Types
+import Types ( State(..), fps, ws, bg, towersList )
 import Frontend
 import Backend
 import Events
@@ -14,10 +14,23 @@ import Randomness
 window :: Display
 window = InWindow "Window" (ws, ws) (10, 10)
 
+
 initState :: RandomGen g => g -> State
-initState g = 
+initState g =
     let (zergs, _) = genStartingPositions g
-    in MkState [] zergs 0 startingTower
+    in MkState
+        { activeZergs = []
+        , spawnableZergs = zergs
+        , timeSinceLastSpawn = 0
+        , activeTowers = towersList
+        , kills = 0
+        , isGameOver = False
+        }
+
+-- initState :: RandomGen g => g -> State
+-- initState g = 
+--     let (zergs, _) = genStartingPositions g
+--     in MkState [] zergs 0 [startingTower]
 
 main :: IO ()
 main = do
