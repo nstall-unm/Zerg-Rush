@@ -19,10 +19,11 @@ import Randomness
 -- draw s = Pictures $
 --     [Color black (rectangleSolid 100 150), drawHUD] ++ map drawZerg (activeZergs s) -- Add a tuple to call drawTower 
 
-{-
 draw :: State -> Picture
 draw s = Pictures $
-    [Color black (rectangleSolid 100 150), drawHUD] ++ map drawZerg (activeZergs s) -- Add a tuple to call drawTower 
+    map drawTower (activeTowers s) ++
+    map drawZerg (activeZergs s) ++  -- Draw zergs first
+    [ drawHUD s ]                    -- Draw HUD on top
 
 loadAsset :: FilePath -> IO (Either String (Image PixelRGBA8))
 loadAsset path = do
@@ -31,15 +32,18 @@ loadAsset path = do
     Left err -> Left err
     Right dyn -> Right $ convertRGBA8 dyn
 
--- Frontend.hs
 drawTower :: Tower -> Picture
 drawTower (MkTower (x, y) health (w, h)) = Pictures [
-    Translate x y $ Color (towerColor health) (rectangleSolid w h),
-    Translate (x - 40) (y + h/2 + 30) $  -- Higher Y-position
-      Scale 0.3 0.3 $  -- Larger text
-      Color white $  -- Contrast color
-      text ("HP: " ++ show health)
+    Translate x y (Color (towerColor health) (rectangleSolid w h)),
+    Translate (x - 40) (y + h/2 + 30) (
+      Scale 0.2 0.2 (
+        Color black (
+          text ("HP: " ++ show health)
+        )
+      )
+    )
   ]
+
   where
     towerColor hp
         | hp > 7 = black
@@ -55,12 +59,19 @@ drawZerg (MkZerg hp _ (x, y)) =
       2 -> yellow
       _ -> red
 
-drawHUD :: Picture
-drawHUD =
-  Translate (-400) 500 $
-  Scale 0.1 0.1 $
-  Color black $
-  Text ("Kills: " ++ show kills)
+
+drawHUD :: State -> Picture
+drawHUD s =
+  Translate (-500) 400 $  -- Make sure it's top-left, adjust as needed
+    Scale 0.5 0.5 $ -- Larger text
+      Color black $ -- Contrast with background
+        text ("Kills: " ++ show (kills s))
+-- drawHUD :: Picture
+-- drawHUD =
+--   Translate (-400) 500 $
+--   Scale 0.1 0.1 $
+--   Color black $
+--   Text ("Kills: " ++ show kills)
 
 {-
 drawZerg :: Zerg -> Picture

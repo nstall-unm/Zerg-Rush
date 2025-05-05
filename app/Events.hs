@@ -29,8 +29,11 @@ handleEvent :: Event -> State -> State
 handleEvent (EventKey (MouseButton LeftButton) Down _ clickPos) s =
     let damaged = map (applyClickdamage clickPos) (activeZergs s)
         survivors = filter isAlive damaged
-        newKills = length (activeZergs s) - length survivors
-    in s { activeZergs = survivors, kills = kills s + newKills }
+        clickKills = length (activeZergs s) - length survivors  -- Zergs killed by click
+    in s { 
+        activeZergs = survivors,
+        kills = kills s + clickKills  -- Add click kills to total
+    }
 handleEvent e s = s
 
 -- killCount :: Zerg -> Int

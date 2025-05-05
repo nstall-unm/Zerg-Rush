@@ -25,14 +25,20 @@ data State =
     MkState {
         activeZergs :: [Zerg],
         spawnableZergs :: [Zerg],
-        timeSinceLastSpawn :: Float,  -- in seconds
-        gameTower :: Tower, -- Tower being in state
-        kills :: Int
+        timeSinceLastSpawn :: Float,
+        activeTowers :: [Tower],  -- Changed from gameTower
+        kills :: Int,
+        isGameOver :: Bool
     } deriving (Eq, Show)
 
+startingTower :: Tower
+startingTower = MkTower (60, 0) 10 (100.0, 150.0) -- 10 hp tower in the middle
 
---kills :: Int
---kills = 0
+startingTower2 :: Tower
+startingTower2 = MkTower (-60, 0) 10 (100.0, 150.0)
+
+towersList :: [Tower]
+towersList = [startingTower, startingTower2]
 
 dark' :: Color -> Color
 dark' c = dim (dim c)  -- Makes color darker

@@ -47,7 +47,7 @@ spawnZerg s = case spawnableZergs s of
     }
     [] -> s   
     -}
--- Randomness.hs
+
 spawnZerg :: State -> State
 spawnZerg s = case spawnableZergs s of
     (z:zs) -> s { 
