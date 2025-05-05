@@ -37,10 +37,22 @@ spawnZerg s =
            spawnableZergs = tail (spawnableZergs s)
          }
 -}
+
+{-
 spawnZerg :: State -> State
 spawnZerg s = case spawnableZergs s of
     (z:zs) -> s { 
         activeZergs = z : activeZergs s,  
         spawnableZergs = zs
     }
-    [] -> s    
+    [] -> s   
+    -}
+-- Randomness.hs
+spawnZerg :: State -> State
+spawnZerg s = case spawnableZergs s of
+    (z:zs) -> s { 
+        activeZergs = z : activeZergs s,
+        spawnableZergs = zs,
+        kills = kills s  -- Explicitly preserve kills
+    }
+    [] -> s

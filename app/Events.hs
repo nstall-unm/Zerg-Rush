@@ -27,10 +27,10 @@ applyClickdamage clickPos z =
 
 handleEvent :: Event -> State -> State
 handleEvent (EventKey (MouseButton LeftButton) Down _ clickPos) s =
---handleEvent (MouseButton pos) s =
     let damaged = map (applyClickdamage clickPos) (activeZergs s)
         survivors = filter isAlive damaged
-    in s { activeZergs = survivors }
+        newKills = length (activeZergs s) - length survivors
+    in s { activeZergs = survivors, kills = kills s + newKills }
 handleEvent e s = s
 
 -- killCount :: Zerg -> Int

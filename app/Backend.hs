@@ -12,12 +12,36 @@ update dt s =
     let movedZergs = moveZergs dt (activeZergs s)
         (remainingZergs, updatedTowers) = checkTowerCollision movedZergs (activeTowers s)
 
+{-
+update :: Float -> State -> State
+update dt s@(MkState active spawnables time tower)
+    | time + dt >= spawnInterval =
+        let newState = spawnZerg s
+        in newState {
+            timeSinceLastSpawn = 0,
+            activeZergs = moveZergs dt (activeZergs newState)
+        }
+    | otherwise = s {
+        timeSinceLastSpawn = time + dt,
+        activeZergs = moveZergs dt active
+    }
+-}
+update :: Float -> State -> State
+update dt s@(MkState active spawnables time tower currentKills) =
+    let movedZergs = moveZergs dt active
+        (remainingZergs, towerDamage) = checkTowerCollision movedZergs tower
+        updatedTower = applyTowerDamage tower towerDamage
+        towerKills = length movedZergs - length remainingZergs
         baseUpdatedState = s {
             timeSinceLastSpawn = timeSinceLastSpawn s + dt,
             activeZergs = remainingZergs,
             activeTowers = updatedTowers
         }
     in if timeSinceLastSpawn s + dt >= spawnInterval
+            gameTower = updatedTower,
+            kills = currentKills + towerKills
+        }
+    in if time + dt >= spawnInterval
         then case spawnableZergs baseUpdatedState of
             (z:zs) -> baseUpdatedState {
                 activeZergs = z : remainingZergs,
@@ -26,6 +50,15 @@ update dt s =
             }
             [] -> baseUpdatedState
         else baseUpdatedState
+
+-- Check collisions between zergs and tower
+checkTowerCollision :: [Zerg] -> Tower -> ([Zerg], Int)
+checkTowerCollision zergs (MkTower (tx, ty) _ (tw, th)) =
+    foldr (\z (zs, dmg) -> 
+        if zergCollidesWithTower z (tw, th)
+        then (zs, dmg + 1)  -- Count damage, remove zerg
+        else (z:zs, dmg)
+    ) ([], 0) zergs
 
 -- update :: Float -> State -> State
 -- update dt s@(MkState active spawnables time tower) =

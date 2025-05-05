@@ -19,11 +19,10 @@ import Randomness
 -- draw s = Pictures $
 --     [Color black (rectangleSolid 100 150), drawHUD] ++ map drawZerg (activeZergs s) -- Add a tuple to call drawTower 
 
+{-
 draw :: State -> Picture
 draw s = Pictures $
-    map drawTower (activeTowers s) ++
-    [ drawHUD s ] ++
-    map drawZerg (activeZergs s)
+    [Color black (rectangleSolid 100 150), drawHUD] ++ map drawZerg (activeZergs s) -- Add a tuple to call drawTower 
 
 loadAsset :: FilePath -> IO (Either String (Image PixelRGBA8))
 loadAsset path = do
@@ -56,19 +55,12 @@ drawZerg (MkZerg hp _ (x, y)) =
       2 -> yellow
       _ -> red
 
-
-drawHUD :: State -> Picture
-drawHUD s =
+drawHUD :: Picture
+drawHUD =
   Translate (-400) 500 $
   Scale 0.1 0.1 $
   Color black $
-  Text ("Kills: " ++ show (kills s))
--- drawHUD :: Picture
--- drawHUD =
---   Translate (-400) 500 $
---   Scale 0.1 0.1 $
---   Color black $
---   Text ("Kills: " ++ show kills)
+  Text ("Kills: " ++ show kills)
 
 {-
 drawZerg :: Zerg -> Picture
