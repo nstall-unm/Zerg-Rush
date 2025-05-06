@@ -35,13 +35,16 @@ data State =
     } deriving (Eq, Show)
 
 startingTower :: Tower
-startingTower = MkTower (60, 0) 10 (100.0, 150.0) -- 10 hp tower in the middle
+startingTower = MkTower (200, -100) 10 (100.0, 150.0) -- 10 hp tower in the middle
 
 startingTower2 :: Tower
-startingTower2 = MkTower (-60, 0) 10 (100.0, 150.0)
+startingTower2 = MkTower (-200, -100) 10 (100.0, 150.0)
+
+startingTower3 :: Tower
+startingTower3 = MkTower (0, 150) 10 (100.0, 150.0)
 
 towersList :: [Tower]
-towersList = [startingTower, startingTower2]
+towersList = [startingTower, startingTower2, startingTower3]
 
 dark' :: Color -> Color
 dark' c = dim (dim c)  -- Makes color darker
