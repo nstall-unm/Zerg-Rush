@@ -1,7 +1,6 @@
 module Backend where
 
 import Types
-import Randomness
 import Brillo.Data.Point
 import Data.List (minimumBy)
 
@@ -9,9 +8,9 @@ import Data.List (minimumBy)
 spawnInterval :: Float -- this is shit for spawning a zerg every set period of time.
 spawnInterval = 1.0
 
-
 update :: Float -> State -> State
 update dt s =
+    --let movedZergs = moveZergs dt (kills s) (activeTowers s) (activeZergs s)
     let movedZergs = moveZergs dt (activeTowers s) (activeZergs s)
         (remainingZergs, updatedTowers) = checkTowerCollision movedZergs (activeTowers s)
         towerKills = length movedZergs - length remainingZergs  -- Zergs destroyed by towers
@@ -68,16 +67,17 @@ applyTowerDamage :: Tower -> Int -> Tower
 applyTowerDamage (MkTower pos health size) damage =
     MkTower pos (max 0 (health - damage)) size
 
--- TODO: add more movement functions
+-- TODO: fix kills in this function (this is not a very important issue but it would be nice)
+--moveZergs :: Float -> State -> [Tower] -> [Zerg] -> [Zerg]
 moveZergs :: Float -> [Tower] -> [Zerg] -> [Zerg]
-moveZergs dt towersList = map (moveZerg dt towersList)
--- WIP function for adding more to movement
--- moveZergs :: Float -> State -> [Zerg]
--- moveZergs dt state = map move (activeZergs state)
---   where
---     move z
---       | zergID z `mod` 5 == 0 && kills state >= 10 = specialZerg dt z
---       | otherwise                                  = moveZerg dt z
+moveZergs dt tl = map move
+  where
+    move z
+    -- TODO: Add more types of Zerg? Get at least one working first
+      | zergID z `mod` 5 == 0 = specialZerg dt tl z
+      | otherwise             = moveZerg    dt tl z
+    --   | zergID z `mod` 5 == 0 && kills s >= 10 = specialZerg dt tl z
+    --   | otherwise                              = moveZerg    dt tl z
 
 moveZerg :: Float -> [Tower] -> Zerg -> Zerg
 moveZerg dt [] z = z  -- no towers? don't move
@@ -94,9 +94,21 @@ moveZerg dt towers (MkZerg zID hp speed (x, y)) =
         newY = y + uy * moveDist
     in MkZerg zID hp speed (newX, newY)
 
--- Part of the WIP move function
--- specialZerg :: a
--- specialZerg = undefined
+-- TODO: make this an arc zerg
+specialZerg :: Float -> [Tower] -> Zerg -> Zerg
+specialZerg dt [] z = z  -- no towers? don't move
+specialZerg dt towers (MkZerg zID hp speed (x, y)) =
+    let (tx, ty) = closestTowerPos (x, y) towers
+        dx = tx - x -- points from zerg's position to nearest tower
+        dy = ty - y
+        -- normalize direction, needed for consistent speed
+        len = sqrt (dx*dx + dy*dy) -- find length
+        ux = dx / len              -- find unit vector by dividing by lenght
+        uy = dy / len
+        moveDist = speed * dt * fpsFloat fps -- scale by speed and time
+        newX = x + ux * moveDist -- update position
+        newY = y + uy * moveDist
+    in MkZerg zID hp speed (tx, ty)
 
 
 -- moveDist in moveZerg requires a float for the fps, since fps is an int this is required

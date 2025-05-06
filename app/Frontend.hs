@@ -1,6 +1,7 @@
 module Frontend where
 
 import Brillo
+import Brillo.Data.Bitmap
 
 import Types
 
@@ -21,7 +22,6 @@ drawTower (MkTower (x, y) health (w, h)) = Pictures [
       )
     )
   ]
-
   where
     towerColor hp
         | hp > 7 = black
