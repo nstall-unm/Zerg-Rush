@@ -3,6 +3,7 @@ module Backend where
 import Types
 import Brillo.Data.Point
 import Data.List (minimumBy)
+import Brillo (arc)
 
 
 spawnInterval :: Float -- this is shit for spawning a zerg every set period of time.
@@ -74,8 +75,8 @@ moveZergs dt tl = map move
   where
     move z
     -- TODO: Add more types of Zerg? Get at least one working first
-      | zergID z `mod` 5 == 0 = specialZerg dt tl z
-      | otherwise             = moveZerg    dt tl z
+      | zergID z `mod` 5 == 0 = arcZerg    dt tl z
+      | otherwise             = moveZerg   dt tl z
     --   | zergID z `mod` 5 == 0 && kills s >= 10 = specialZerg dt tl z
     --   | otherwise                              = moveZerg    dt tl z
 
@@ -94,22 +95,31 @@ moveZerg dt towers (MkZerg zID hp speed (x, y)) =
         newY = y + uy * moveDist
     in MkZerg zID hp speed (newX, newY)
 
--- TODO: make this an arc zerg
-specialZerg :: Float -> [Tower] -> Zerg -> Zerg
-specialZerg dt [] z = z  -- no towers? don't move
-specialZerg dt towers (MkZerg zID hp speed (x, y)) =
+arcZerg :: Float -> [Tower] -> Zerg -> Zerg
+arcZerg dt [] z = z  -- no towers? don't move
+arcZerg dt towers (MkZerg zID hp speed (x, y)) =
     let (tx, ty) = closestTowerPos (x, y) towers
-        dx = tx - x -- points from zerg's position to nearest tower
+        dx = tx - x
         dy = ty - y
         -- normalize direction, needed for consistent speed
         len = sqrt (dx*dx + dy*dy) -- find length
         ux = dx / len              -- find unit vector by dividing by lenght
         uy = dy / len
+        -- perpendicular vector (for arc offset)
+        perpX = -uy 
+        perpY = ux
+        arcSize = 10 -- change how wide the arc is
+        arcOffset = sin (dt * 10 + fromIntegral zID) * arcSize
+        arcX = ux + perpX * arcOffset
+        arcY = uy + perpY * arcOffset
+        -- re-normalize vector to account for arc
+        arcLen = sqrt (arcX * arcX + arcY * arcY)
+        finalUX = arcX / arcLen
+        finalUY = arcY / arcLen
         moveDist = speed * dt * fpsFloat fps -- scale by speed and time
-        newX = x + ux * moveDist -- update position
-        newY = y + uy * moveDist
-    in MkZerg zID hp speed (tx, ty)
-
+        newX = x + finalUX * moveDist -- update position
+        newY = y + finalUY * moveDist
+    in MkZerg zID hp speed (newX, newY)
 
 -- moveDist in moveZerg requires a float for the fps, since fps is an int this is required
 -- this insures we also use the global fps value and if it is ever changed this behavior remains the same
