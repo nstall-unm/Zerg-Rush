@@ -9,9 +9,8 @@ import Types
 
 -- try not to touch this file unless you really need to
 
--- TODO: add zerg ID system
-genZerg :: RandomGen g => g -> (Zerg, g)
-genZerg g = 
+genZerg :: RandomGen g => Int -> g -> (Zerg, Int, g)
+genZerg zID g = 
     let hws = fromIntegral ws / 2
         (side, g') = uniformR (1 :: Int, 4 :: Int) g
         (xy, g'')  = uniformR (-hws, hws) g'
@@ -22,13 +21,13 @@ genZerg g =
             2 -> (xy, -hws)   -- bottom
             3 -> (-hws, xy)   -- left
             _ -> (hws, xy)    -- right (covers 4)
-    in (MkZerg zergStartingHealth speed p, g''')
+        z = MkZerg zID zergStartingHealth speed p
+    in (z, zID + 1, g''')
 
-genStartingPositions :: RandomGen g => g -> ([Zerg], g)
-genStartingPositions g =
-    let (zerg, g') = genZerg g
-        (zergs, g'') = genStartingPositions g'
-    in (zerg : zergs, g'')
+genStartingPositions :: RandomGen g => Int -> g -> [Zerg]
+genStartingPositions zID g =
+    let (zerg, zID', g') = genZerg zID g
+    in zerg : genStartingPositions zID' g'
 
 spawnZerg :: State -> State
 spawnZerg s = case spawnableZergs s of

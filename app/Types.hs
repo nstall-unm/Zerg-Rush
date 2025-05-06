@@ -3,13 +3,9 @@ module Types where
 import Brillo.Data.Point
 import Brillo.Data.Color
 
-
--- TODO: Zerg ID system
--- NOTE: if anyone decides to work on this uncomment zergID = 0 in initState in Main.hs
--- This breaks genZerg in Randomness, I was trying to get that working but it requires Zerg -> Int and I'm not sure how to implement that
 data Zerg = 
     MkZerg {
-        --zergID :: Int,
+        zergID :: Int,
         zergHealth :: Int,
         zergSpeed :: Float,
         zergPos :: Point

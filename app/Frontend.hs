@@ -3,7 +3,6 @@ module Frontend where
 import Brillo
 
 import Types
-import Randomness
 
 draw :: State -> Picture
 draw s = Pictures $
@@ -30,7 +29,7 @@ drawTower (MkTower (x, y) health (w, h)) = Pictures [
         | otherwise = red
 
 drawZerg :: Zerg -> Picture
-drawZerg (MkZerg hp _ (x, y)) =
+drawZerg (MkZerg _ hp _ (x, y)) =
   Pictures [Translate x y (Color (healthColor hp) (circleSolid 10))]
   where
     healthColor h = case h of

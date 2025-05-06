@@ -14,15 +14,14 @@ window = InWindow "Zerg Rush" (ws, ws) (10, 10)
 
 initState :: RandomGen g => g -> State
 initState g =
-    let (zergs, _) = genStartingPositions g
+    let zergs = genStartingPositions 0 g
     in MkState
         { activeZergs = [],
-         spawnableZergs = zergs,
-         --zergID = 0,
-         timeSinceLastSpawn = 0,
-         activeTowers = towersList,
-         kills = 0,
-        isGameOver = False
+          spawnableZergs = zergs,
+          timeSinceLastSpawn = 0, 
+          activeTowers = towersList,
+          kills = 0,
+          isGameOver = False
         }
 
 main :: IO ()
