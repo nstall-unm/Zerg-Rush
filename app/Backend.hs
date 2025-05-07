@@ -3,8 +3,6 @@ module Backend where
 import Types
 import Brillo.Data.Point
 import Data.List (minimumBy)
-import Brillo (arc)
-
 
 spawnInterval :: Float -- this is shit for spawning a zerg every set period of time.
 spawnInterval = 1.0
@@ -14,12 +12,12 @@ update dt s =
     --let movedZergs = moveZergs dt (kills s) (activeTowers s) (activeZergs s)
     let movedZergs = moveZergs dt (activeTowers s) (activeZergs s)
         (remainingZergs, updatedTowers) = checkTowerCollision movedZergs (activeTowers s)
-        towerKills = length movedZergs - length remainingZergs  -- Zergs destroyed by towers
+        --towerKills = length movedZergs - length remainingZergs  -- Zergs destroyed by towers
         baseUpdatedState = s {
             timeSinceLastSpawn = timeSinceLastSpawn s + dt,
             activeZergs = remainingZergs,
             activeTowers = updatedTowers,
-            kills = kills s + towerKills  -- Add tower kills to total
+            kills = kills s  -- Add tower kills to total
             -- = trace ("Tower kills: " ++ show towerKills) () --debug statement 
         }
     in if timeSinceLastSpawn s + dt >= spawnInterval
@@ -57,6 +55,7 @@ collideAndDamage z (t:ts)
         Just rest -> Just (t : rest)
         Nothing -> Nothing
 
+zergCollidesWithTower :: Zerg -> Tower -> Bool
 zergCollidesWithTower (MkZerg _ _ _ (zx, zy)) (MkTower (tx, ty) _ (tw, th)) =
     let halfW = tw / 2
         halfH = th / 2
