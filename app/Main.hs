@@ -2,7 +2,7 @@ module Main where
 
 import Brillo
 
-import Types ( State(..), fps, ws, bg, towersList)  
+import Types ( State(..), towersList, ws, bg, fps, loadTower ) 
 import Frontend
 import Backend
 import Events
@@ -20,11 +20,18 @@ initState g =
           spawnableZergs = zergs,
           timeSinceLastSpawn = 0, 
           activeTowers = towersList,
+          towerImages = undefined, -- To disable a warning
           kills = 0,
           isGameOver = False
         }
 
+-- loads .bmps
+initLoader :: StdGen -> [Picture] -> State
+initLoader g tImgs = (initState g) { towerImages = tImgs }
+
 main :: IO ()
 main = do
-    let g = mkStdGen 42  -- Constant seed for reproducibility
-    play window bg fps (initState g) draw handleEvent update
+    tImgs <- loadTower
+    let g = mkStdGen 42
+    let initial = initLoader g tImgs
+    play window bg fps initial draw handleEvent update

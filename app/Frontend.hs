@@ -1,19 +1,18 @@
 module Frontend where
 
 import Brillo
-import Brillo.Data.Bitmap
 
 import Types
 
 draw :: State -> Picture
 draw s = Pictures $
-    map drawTower (activeTowers s) ++
-    map drawZerg (activeZergs s) ++  -- Draw zergs first
-    [ drawHUD s ]                    -- Draw HUD on top
-
-drawTower :: Tower -> Picture
-drawTower (MkTower (x, y) health (w, h)) = Pictures [
-    Translate x y (Color (towerColor health) (rectangleSolid w h)),
+    map (drawTower (towerImages s)) (activeTowers s) ++
+    map drawZerg (activeZergs s) ++
+    [drawHUD s]
+  
+drawTower :: [Picture] -> Tower -> Picture
+drawTower imgs (MkTower (x, y) health (w, h)) = Pictures [
+    Translate x y (towerImage health),
     Translate (x - 40) (y + h/2 + 30) (
       Scale 0.2 0.2 (
         Color black (
@@ -23,10 +22,10 @@ drawTower (MkTower (x, y) health (w, h)) = Pictures [
     )
   ]
   where
-    towerColor hp
-        | hp > 7 = black
-        | hp > 3 = dark red
-        | otherwise = red
+    towerImage hp
+        | hp > 7     = imgs !! 0 -- towerFULL.bmp
+        | hp > 3     = imgs !! 1 -- towerDMG.bmp
+        | otherwise  = imgs !! 2 -- towerDEST.bmp
 
 drawZerg :: Zerg -> Picture
 drawZerg (MkZerg _ hp _ (x, y)) =

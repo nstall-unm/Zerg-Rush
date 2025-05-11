@@ -27,9 +27,18 @@ data State =
         spawnableZergs :: [Zerg],
         timeSinceLastSpawn :: Float,
         activeTowers :: [Tower],  -- Changed from gameTower
+        towerImages  :: [Picture],
         kills :: Int,
         isGameOver :: Bool
     } deriving (Eq, Show)
+
+-- loads tower sprites
+loadTower :: IO [Picture]
+loadTower = mapM loadBMP [
+    "resources/tower/towerFULL.bmp",
+    "resources/tower/towerDMG.bmp",
+    "resources/tower/towerDEST.bmp"
+  ]
 
 startingTower :: Tower
 startingTower = MkTower (200, -100) 10 (100.0, 150.0) -- 10 hp tower in the middle
