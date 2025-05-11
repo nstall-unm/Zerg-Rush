@@ -67,58 +67,58 @@ applyTowerDamage :: Tower -> Int -> Tower
 applyTowerDamage (MkTower pos health size) damage =
     MkTower pos (max 0 (health - damage)) size
 
--- TODO: fix kills in this function (this is not a very important issue but it would be nice)
---moveZergs :: Float -> State -> [Tower] -> [Zerg] -> [Zerg]
+-- version that includes kills, this code works but it breaks update in a strange way
+-- --moveZergs :: Float -> State -> [Tower] -> [Zerg] -> [Zerg]
+--     --   | zergID z `mod` 5 == 0 && kills s >= 10 = specialZerg dt tl z
+--     --   | otherwise                              = moveZerg    dt tl z
+
 moveZergs :: Float -> [Tower] -> [Zerg] -> [Zerg]
 moveZergs dt tl = map move
   where
     move z
-    -- TODO: Add more types of Zerg? Get at least one working first
-      | zergID z `mod` 5 == 0 = arcZerg    dt tl z
-      | otherwise             = moveZerg   dt tl z
-    --   | zergID z `mod` 5 == 0 && kills s >= 10 = specialZerg dt tl z
-    --   | otherwise                              = moveZerg    dt tl z
+      | zergID z `mod` 5 == 0 = moveZerg arcZerg   dt tl z      -- spawns an arc zerg every 5th zerg
+      | otherwise             = moveZerg defaultMove dt tl z    -- normal zerg
 
-moveZerg :: Float -> [Tower] -> Zerg -> Zerg
-moveZerg dt [] z = z  -- no towers? don't move
-moveZerg dt towers (MkZerg zID hp speed (x, y)) =
-    let (tx, ty) = closestTowerPos (x, y) towers
-        dx = tx - x -- points from zerg's position to nearest tower
-        dy = ty - y
+type Position = (Float, Float)
+type DirectionFunc = Float -> Zerg -> [Tower] -> (Float, Float)  -- dt -> zerg -> towers -> movement direction
+
+-- general zerg movement needed for all move functions
+moveZerg :: DirectionFunc -> Float -> [Tower] -> Zerg -> Zerg
+moveZerg dirFunc dt [] z = z
+moveZerg dirFunc dt towers z@(MkZerg zID hp speed (x, y)) =
+    let (dx, dy) = dirFunc dt z towers
         -- normalize direction, needed for consistent speed
-        len = sqrt (dx*dx + dy*dy) -- find length
-        ux = dx / len              -- find unit vector by dividing by lenght
+        len = sqrt (dx * dx + dy * dy)  -- find length
+        ux = dx / len                   -- find unit vector by dividing length
         uy = dy / len
-        moveDist = speed * dt * fpsFloat fps -- scale by speed and time
-        newX = x + ux * moveDist -- update position
+        moveDist = speed * dt * fpsFloat fps  -- scale by speed and time
+        newX = x + ux * moveDist  -- update position
         newY = y + uy * moveDist
     in MkZerg zID hp speed (newX, newY)
 
-arcZerg :: Float -> [Tower] -> Zerg -> Zerg
-arcZerg dt [] z = z  -- no towers? don't move
-arcZerg dt towers (MkZerg zID hp speed (x, y)) =
+-- Moves in a straight line
+defaultMove :: DirectionFunc
+defaultMove _ (MkZerg _ _ _ (x, y)) towers =
+    let (tx, ty) = closestTowerPos (x, y) towers
+    in (tx - x, ty - y)
+
+-- Arcing movement
+arcZerg :: DirectionFunc
+arcZerg dt (MkZerg zID _ _ (x, y)) towers =
     let (tx, ty) = closestTowerPos (x, y) towers
         dx = tx - x
         dy = ty - y
-        -- normalize direction, needed for consistent speed
-        len = sqrt (dx*dx + dy*dy) -- find length
-        ux = dx / len              -- find unit vector by dividing by lenght
+        len = sqrt (dx * dx + dy * dy)
+        ux = dx / len
         uy = dy / len
-        -- perpendicular vector (for arc offset)
-        perpX = -uy 
+         -- perpendicular vector (for arc offset)
+        perpX = -uy
         perpY = ux
         arcSize = 10 -- change how wide the arc is
         arcOffset = sin (dt * 10 + fromIntegral zID) * arcSize
         arcX = ux + perpX * arcOffset
         arcY = uy + perpY * arcOffset
-        -- re-normalize vector to account for arc
-        arcLen = sqrt (arcX * arcX + arcY * arcY)
-        finalUX = arcX / arcLen
-        finalUY = arcY / arcLen
-        moveDist = speed * dt * fpsFloat fps -- scale by speed and time
-        newX = x + finalUX * moveDist -- update position
-        newY = y + finalUY * moveDist
-    in MkZerg zID hp speed (newX, newY)
+    in (arcX, arcY)
 
 -- moveDist in moveZerg requires a float for the fps, since fps is an int this is required
 -- this insures we also use the global fps value and if it is ever changed this behavior remains the same
