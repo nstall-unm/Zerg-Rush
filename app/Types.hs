@@ -26,9 +26,9 @@ data State =
         activeZergs :: [Zerg],
         spawnableZergs :: [Zerg],
         timeSinceLastSpawn :: Float,
-        zergImages :: [Picture],
-        activeTowers :: [Tower],  -- Changed from gameTower
-        towerImages  :: [Picture],
+        zergImages :: [Picture],  -- list of zerg assets
+        activeTowers :: [Tower], 
+        towerImages  :: [Picture], -- list of tower assets
         kills :: Int,
         isGameOver :: Bool
     } deriving (Eq, Show)
@@ -36,9 +36,9 @@ data State =
 -- loads tower sprites
 loadTower :: IO [Picture]
 loadTower = mapM loadBMP [
-    "resources/tower/towerFULL.bmp",
-    "resources/tower/towerDMG.bmp",
-    "resources/tower/towerDEST.bmp"
+    "resources/tower/towerFULL.bmp", -- full health sprite
+    "resources/tower/towerDMG.bmp",  -- partial (damgaged) health sprite
+    "resources/tower/towerDEST.bmp"  -- low health (destroyed) sprite
   ]
 
 -- loads zerg sprites
