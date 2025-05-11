@@ -2,7 +2,7 @@ module Main where
 
 import Brillo
 
-import Types ( State(..), towersList, ws, bg, fps, loadTower ) 
+import Types 
 import Frontend
 import Backend
 import Events
@@ -14,24 +14,29 @@ window = InWindow "Zerg Rush" (ws, ws) (10, 10)
 
 initState :: RandomGen g => g -> State
 initState g =
-    let zergs = genStartingPositions 1 g
+    let zergs = genStartingPositions 1 g -- Set Zerg ID to 1, if it is 0 this causes special zergs to spawn first
     in MkState
         { activeZergs = [],
           spawnableZergs = zergs,
           timeSinceLastSpawn = 0, 
+          zergImages = undefined, -- To disable a warning, handled in initLoader
           activeTowers = towersList,
-          towerImages = undefined, -- To disable a warning
+          towerImages = undefined, -- To disable a warning, handled in initLoader
           kills = 0,
           isGameOver = False
         }
 
 -- loads .bmps
-initLoader :: StdGen -> [Picture] -> State
-initLoader g tImgs = (initState g) { towerImages = tImgs }
+initLoader :: StdGen -> [Picture] -> [Picture] -> State
+initLoader g tImgs zImgs = (initState g) 
+  { towerImages = tImgs,
+    zergImages = zImgs
+  }
 
 main :: IO ()
 main = do
-    tImgs <- loadTower
+    tImgs <- loadTower   -- load tower assets
+    zImgs <- loadZergImg -- load zerg assets
     let g = mkStdGen 42
-    let initial = initLoader g tImgs
+    let initial = initLoader g tImgs zImgs -- load resources
     play window bg fps initial draw handleEvent update

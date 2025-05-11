@@ -7,7 +7,7 @@ import Types
 draw :: State -> Picture
 draw s = Pictures $
     map (drawTower (towerImages s)) (activeTowers s) ++
-    map drawZerg (activeZergs s) ++
+    map (drawZerg (zergImages s)) (activeZergs s) ++
     [drawHUD s]
   
 drawTower :: [Picture] -> Tower -> Picture
@@ -27,14 +27,14 @@ drawTower imgs (MkTower (x, y) health (w, h)) = Pictures [
         | hp > 3     = imgs !! 1 -- towerDMG.bmp
         | otherwise  = imgs !! 2 -- towerDEST.bmp
 
-drawZerg :: Zerg -> Picture
-drawZerg (MkZerg _ hp _ (x, y)) =
-  Pictures [Translate x y (Color (healthColor hp) (circleSolid 10))]
+drawZerg :: [Picture] -> Zerg -> Picture
+drawZerg imgs (MkZerg _ hp _ (x, y)) =
+  Translate x y (zergImage hp)
   where
-    healthColor h = case h of
-      3 -> green
-      2 -> yellow
-      _ -> red
+    zergImage h = case h of
+      3 -> imgs !! 0  -- zergGREEN.bmp
+      2 -> imgs !! 1  -- zergYELLOW.bmp
+      _ -> imgs !! 2  -- zergRED.bmp
 
 drawHUD :: State -> Picture
 drawHUD s =

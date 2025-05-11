@@ -26,6 +26,7 @@ data State =
         activeZergs :: [Zerg],
         spawnableZergs :: [Zerg],
         timeSinceLastSpawn :: Float,
+        zergImages :: [Picture],
         activeTowers :: [Tower],  -- Changed from gameTower
         towerImages  :: [Picture],
         kills :: Int,
@@ -38,6 +39,14 @@ loadTower = mapM loadBMP [
     "resources/tower/towerFULL.bmp",
     "resources/tower/towerDMG.bmp",
     "resources/tower/towerDEST.bmp"
+  ]
+
+-- loads zerg sprites
+loadZergImg :: IO [Picture]
+loadZergImg = mapM loadBMP [    
+    "resources/zerg/zergGREEN.bmp",
+    "resources/zerg/zergYELLOW.bmp",
+    "resources/zerg/zergRED.bmp"
   ]
 
 startingTower :: Tower
