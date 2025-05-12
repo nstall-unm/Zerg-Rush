@@ -61,6 +61,10 @@ startingTower3 = MkTower (0, 150) 10 (100.0, 150.0)
 towersList :: [Tower]
 towersList = [startingTower, startingTower2, startingTower3]
 
+
+zergRadius :: Float
+zergRadius = 10 -- size of the zergs used in hit detection and click detection
+
 dark' :: Color -> Color
 dark' c = dim (dim c)  -- Makes color darker
 

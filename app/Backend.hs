@@ -5,22 +5,29 @@ import Brillo.Data.Point
 import Data.List (minimumBy)
 
 spawnInterval :: Float -- this is shit for spawning a zerg every set period of time.
-spawnInterval = 1.0
+spawnInterval = 2.0
+
+spawnInterval2 :: Int -> Float
+spawnInterval2 killCount = max 0.5 (2.0 - 0.5 * fromIntegral (min 3 (killCount `div` 15)))
+--spawnInterval2 killCount = max 0.25 (2.0 - 0.25 * fromIntegral (min 3 (killCount `div` 20)))
 
 update :: Float -> State -> State
+update _ s | isGameOver s = s  -- no updates after game over
 update dt s =
     --let movedZergs = moveZergs dt (kills s) (activeTowers s) (activeZergs s)
     let movedZergs = moveZergs dt (activeTowers s) (activeZergs s)
         (remainingZergs, updatedTowers) = checkTowerCollision movedZergs (activeTowers s)
+        gameIsOver = null updatedTowers
         --towerKills = length movedZergs - length remainingZergs  -- Zergs destroyed by towers
         baseUpdatedState = s {
             timeSinceLastSpawn = timeSinceLastSpawn s + dt,
             activeZergs = remainingZergs,
             activeTowers = updatedTowers,
-            kills = kills s  -- Add tower kills to total
+            kills = kills s,  -- Add tower kills to total
+            isGameOver = gameIsOver
             -- = trace ("Tower kills: " ++ show towerKills) () --debug statement 
         }
-    in if timeSinceLastSpawn s + dt >= spawnInterval
+    in if timeSinceLastSpawn s + dt >= spawnInterval2 (kills s)
         then case spawnableZergs baseUpdatedState of
             (z:zs) -> baseUpdatedState {
                 activeZergs = z : activeZergs baseUpdatedState,
@@ -57,8 +64,8 @@ collideAndDamage z (t:ts)
 
 zergCollidesWithTower :: Zerg -> Tower -> Bool
 zergCollidesWithTower (MkZerg _ _ _ (zx, zy)) (MkTower (tx, ty) _ (tw, th)) =
-    let halfW = tw / 2
-        halfH = th / 2
+    let halfW = tw / 2 + zergRadius
+        halfH = th / 2 + zergRadius
     -- Check if zerg is within the tower's victinity 
     in (zx >= tx - halfW && zx <= tx + halfW) &&
        (zy >= ty - halfH && zy <= ty + halfH)
@@ -66,11 +73,6 @@ zergCollidesWithTower (MkZerg _ _ _ (zx, zy)) (MkTower (tx, ty) _ (tw, th)) =
 applyTowerDamage :: Tower -> Int -> Tower
 applyTowerDamage (MkTower pos health size) damage =
     MkTower pos (max 0 (health - damage)) size
-
--- version that includes kills, this code works but it breaks update in a strange way
--- --moveZergs :: Float -> State -> [Tower] -> [Zerg] -> [Zerg]
---     --   | zergID z `mod` 5 == 0 && kills s >= 10 = specialZerg dt tl z
---     --   | otherwise                              = moveZerg    dt tl z
 
 moveZergs :: Float -> [Tower] -> [Zerg] -> [Zerg]
 moveZergs dt tl = map move

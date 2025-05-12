@@ -37,6 +37,6 @@ main :: IO ()
 main = do
     tImgs <- loadTower   -- load tower assets
     zImgs <- loadZergImg -- load zerg assets
-    let g = mkStdGen 42
-    let initial = initLoader g tImgs zImgs -- load resources
+    g <- newStdGen       -- random seed every time
+    let initial = initLoader g tImgs zImgs
     play window bg fps initial draw handleEvent update
