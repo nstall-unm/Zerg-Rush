@@ -1,7 +1,6 @@
 module Frontend where
 
 import Brillo
-
 import Types
 
 draw :: State -> Picture
@@ -38,9 +37,7 @@ drawZerg imgs (MkZerg _ hp _ (x, y)) =
 
 drawHUD :: State -> Picture
 drawHUD s =
-  Translate (-500) 400 $  -- Make sure it's top-left, adjust as needed
+  Translate (-500) 400 $  -- Makes sure that it's top-left
     Scale 0.5 0.5 $ -- Larger text
       Color black $ -- Contrast with background
         text ("Kills: " ++ show (kills s))
-
--- this shoulld do the drawing, from what I understand it should be given the list of active zergs and the tower(s) to draw.

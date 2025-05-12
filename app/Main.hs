@@ -14,19 +14,19 @@ window = InWindow "Zerg Rush" (ws, ws) (10, 10)
 
 initState :: RandomGen g => g -> State
 initState g =
-    let zergs = genStartingPositions 1 g -- Set Zerg ID to 1, if it is 0 this causes special zergs to spawn first
+    let zergs = genStartingPositions 1 g -- Sets Zerg ID to 1, if it is 0 this causes special zergs to spawn first
     in MkState
         { activeZergs = [],
           spawnableZergs = zergs,
           timeSinceLastSpawn = 0, 
-          zergImages = undefined, -- To disable a warning, handled in initLoader
+          zergImages = undefined, 
           activeTowers = towersList,
-          towerImages = undefined, -- To disable a warning, handled in initLoader
+          towerImages = undefined, 
           kills = 0,
           isGameOver = False
         }
 
--- loads .bmps
+-- Loads .bmps
 initLoader :: StdGen -> [Picture] -> [Picture] -> State
 initLoader g tImgs zImgs = (initState g) 
   { towerImages = tImgs,
@@ -35,8 +35,8 @@ initLoader g tImgs zImgs = (initState g)
 
 main :: IO ()
 main = do
-    tImgs <- loadTower   -- load tower assets
-    zImgs <- loadZergImg -- load zerg assets
-    g <- newStdGen       -- random seed every time
+    tImgs <- loadTower   -- Loads the tower assets
+    zImgs <- loadZergImg -- Loads the zerg assets
+    g <- newStdGen       -- Random seed every time
     let initial = initLoader g tImgs zImgs
     play window bg fps initial draw handleEvent update

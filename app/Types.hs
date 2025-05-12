@@ -18,7 +18,7 @@ zergStartingHealth = 3
 data Tower = MkTower {
     towerPos :: Point,
     towerHealth :: Int,
-    towerSize :: (Float, Float) -- widith and height
+    towerSize :: (Float, Float) -- Widith and Height
 } deriving (Eq, Show)
 
 data State =
@@ -26,22 +26,22 @@ data State =
         activeZergs :: [Zerg],
         spawnableZergs :: [Zerg],
         timeSinceLastSpawn :: Float,
-        zergImages :: [Picture],  -- list of zerg assets
+        zergImages :: [Picture],  -- List of zerg assets
         activeTowers :: [Tower], 
-        towerImages  :: [Picture], -- list of tower assets
+        towerImages  :: [Picture], -- List of tower assets
         kills :: Int,
         isGameOver :: Bool
     } deriving (Eq, Show)
 
--- loads tower sprites
+-- Loads tower sprites
 loadTower :: IO [Picture]
 loadTower = mapM loadBMP [
-    "resources/tower/towerFULL.bmp", -- full health sprite
-    "resources/tower/towerDMG.bmp",  -- partial (damgaged) health sprite
-    "resources/tower/towerDEST.bmp"  -- low health (destroyed) sprite
+    "resources/tower/towerFULL.bmp", -- Full health sprite
+    "resources/tower/towerDMG.bmp",  -- Partial (damgaged) health sprite
+    "resources/tower/towerDEST.bmp"  -- Low health (destroyed) sprite
   ]
 
--- loads zerg sprites
+-- Loads zerg sprites
 loadZergImg :: IO [Picture]
 loadZergImg = mapM loadBMP [    
     "resources/zerg/zergGREEN.bmp",
@@ -63,7 +63,7 @@ towersList = [startingTower, startingTower2, startingTower3]
 
 
 zergRadius :: Float
-zergRadius = 10 -- size of the zergs used in hit detection and click detection
+zergRadius = 10 -- Size of the zergs used in the hit detection and click detection
 
 dark' :: Color -> Color
 dark' c = dim (dim c)  -- Makes color darker

@@ -4,28 +4,24 @@ import Types
 import Brillo.Data.Point
 import Data.List (minimumBy)
 
-spawnInterval :: Float -- this is shit for spawning a zerg every set period of time.
+spawnInterval :: Float -- This is for spawning a zerg for every set period of time.
 spawnInterval = 2.0
 
 spawnInterval2 :: Int -> Float
 spawnInterval2 killCount = max 0.5 (2.0 - 0.5 * fromIntegral (min 3 (killCount `div` 15)))
---spawnInterval2 killCount = max 0.25 (2.0 - 0.25 * fromIntegral (min 3 (killCount `div` 20)))
 
 update :: Float -> State -> State
-update _ s | isGameOver s = s  -- no updates after game over
+update _ s | isGameOver s = s  -- No updates after the game's over
 update dt s =
-    --let movedZergs = moveZergs dt (kills s) (activeTowers s) (activeZergs s)
     let movedZergs = moveZergs dt (activeTowers s) (activeZergs s)
         (remainingZergs, updatedTowers) = checkTowerCollision movedZergs (activeTowers s)
         gameIsOver = null updatedTowers
-        --towerKills = length movedZergs - length remainingZergs  -- Zergs destroyed by towers
         baseUpdatedState = s {
             timeSinceLastSpawn = timeSinceLastSpawn s + dt,
             activeZergs = remainingZergs,
             activeTowers = updatedTowers,
-            kills = kills s,  -- Add tower kills to total
+            kills = kills s,  -- Adds tower kills to total
             isGameOver = gameIsOver
-            -- = trace ("Tower kills: " ++ show towerKills) () --debug statement 
         }
     in if timeSinceLastSpawn s + dt >= spawnInterval2 (kills s)
         then case spawnableZergs baseUpdatedState of
@@ -66,7 +62,7 @@ zergCollidesWithTower :: Zerg -> Tower -> Bool
 zergCollidesWithTower (MkZerg _ _ _ (zx, zy)) (MkTower (tx, ty) _ (tw, th)) =
     let halfW = tw / 2 + zergRadius
         halfH = th / 2 + zergRadius
-    -- Check if zerg is within the tower's victinity 
+    -- Checks if zerg is within the tower's victinity 
     in (zx >= tx - halfW && zx <= tx + halfW) &&
        (zy >= ty - halfH && zy <= ty + halfH)
 
@@ -78,23 +74,23 @@ moveZergs :: Float -> [Tower] -> [Zerg] -> [Zerg]
 moveZergs dt tl = map move
   where
     move z
-      | zergID z `mod` 5 == 0 = moveZerg arcZerg   dt tl z      -- spawns an arc zerg every 5th zerg
-      | otherwise             = moveZerg defaultMove dt tl z    -- normal zerg
+      | zergID z `mod` 5 == 0 = moveZerg arcZerg   dt tl z      -- Spawns an arc zerg every 5th zerg
+      | otherwise             = moveZerg defaultMove dt tl z    -- Normal zerg
 
 type Position = (Float, Float)
 type DirectionFunc = Float -> Zerg -> [Tower] -> (Float, Float)  -- dt -> zerg -> towers -> movement direction
 
--- general zerg movement needed for all move functions
+-- General zerg movement needed for all move functions
 moveZerg :: DirectionFunc -> Float -> [Tower] -> Zerg -> Zerg
 moveZerg dirFunc dt [] z = z
 moveZerg dirFunc dt towers z@(MkZerg zID hp speed (x, y)) =
     let (dx, dy) = dirFunc dt z towers
-        -- normalize direction, needed for consistent speed
-        len = sqrt (dx * dx + dy * dy)  -- find length
-        ux = dx / len                   -- find unit vector by dividing length
+        -- Normalizes direction, which is needed for consistent speed
+        len = sqrt (dx * dx + dy * dy)  -- Finds length
+        ux = dx / len                   -- Finds unit vector by dividing length
         uy = dy / len
-        moveDist = speed * dt * fpsFloat fps  -- scale by speed and time
-        newX = x + ux * moveDist  -- update position
+        moveDist = speed * dt * fpsFloat fps  -- Scales by speed and time
+        newX = x + ux * moveDist  -- Updates position
         newY = y + uy * moveDist
     in MkZerg zID hp speed (newX, newY)
 
@@ -113,17 +109,17 @@ arcZerg dt (MkZerg zID _ _ (x, y)) towers =
         len = sqrt (dx * dx + dy * dy)
         ux = dx / len
         uy = dy / len
-         -- perpendicular vector (for arc offset)
+        -- Perpendicular vector (for arc offset)
         perpX = -uy
         perpY = ux
-        arcSize = 10 -- change how wide the arc is
+        arcSize = 10 -- Changes how wide the arc is
         arcOffset = sin (dt * 10 + fromIntegral zID) * arcSize
         arcX = ux + perpX * arcOffset
         arcY = uy + perpY * arcOffset
     in (arcX, arcY)
 
--- moveDist in moveZerg requires a float for the fps, since fps is an int this is required
--- this insures we also use the global fps value and if it is ever changed this behavior remains the same
+-- moveDist in moveZerg which requires a float for the fps, since fps is an int
+-- This insures we also use the global fps value and if it is ever changed, the behavior remains the same
 fpsFloat :: Int -> Float
 fpsFloat = fromIntegral
 
